@@ -2,7 +2,10 @@ package com.hien.le.dkvfinder.core.network.di
 
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.hien.le.dkvfinder.core.network.BuildConfig
+import com.hien.le.dkvfinder.core.network.NetworkDataSource
+import com.hien.le.dkvfinder.core.network.retrofit.RetrofitNetworkDataSource
 import com.hien.le.dkvfinder.core.network.service.OpenChargeMapApiService
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,9 +19,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModule {
-
-    private const val BASE_URL = "https://api.openchargemap.io/v3/"
+abstract class NetworkModule {
+    companion object {
+        private const val BASE_URL = "https://api.openchargemap.io/v3/"
+    }
 
     @Provides
     @Singleton
@@ -64,4 +68,10 @@ object NetworkModule {
     fun provideOpenChargeMapApiService(retrofit: Retrofit): OpenChargeMapApiService {
         return retrofit.create(OpenChargeMapApiService::class.java)
     }
+
+    @Binds
+    @Singleton
+    abstract fun bindNetworkDataSource(
+        impl: RetrofitNetworkDataSource
+    ): NetworkDataSource
 }

@@ -9,6 +9,9 @@ import retrofit2.http.Query
 interface OpenChargeMapApiService {
     @GET("poi")
     suspend fun getListPoi(
-        @Query("country") country: String,
+        @Query("countrycode") country: String,
+        @Query("maxresults") maxResults: Int = 100,
+        @Query("compact") compact: Boolean = true,
+        @Query("verbose") verbose: Boolean = false
     ): Either<CallError, List<Poi>>
 }
