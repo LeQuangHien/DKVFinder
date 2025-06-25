@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="toggle_favorite_description">Toggle favorite status</string>
+    <string name="error_loading_data">Error loading data</string>
+    <string name="poi_distance_format">%1$.1f %2$s</string>
+    <string name="distance_unit_km">km</string>
+    <string name="distance_unit_miles">miles</string>
+    <string name="failed_to_load_pois">Failed to load POIs.</string>
+</resources>

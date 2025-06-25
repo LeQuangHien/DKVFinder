@@ -110,7 +110,7 @@ class PoiViewModel @Inject constructor(
     }
 
     // Example function to handle a favorite toggle action from the UI
-    /*    fun toggleFavorite(poiId: Int, isCurrentlyFavorite: Boolean) {
+        fun toggleFavorite(poiId: Int, isCurrentlyFavorite: Boolean) {
             viewModelScope.launch {
                 // Optimistically update the UI first for better responsiveness
                 val currentSuccessState = _poiState.value as? PoiUiState.Success
@@ -122,7 +122,7 @@ class PoiViewModel @Inject constructor(
                 }
 
                 // Then, call the repository to persist the change
-                try {
+               /* try {
                     if (isCurrentlyFavorite) {
                         poiRepository.unmarkAsFavorite(poiId)
                     } else {
@@ -135,7 +135,7 @@ class PoiViewModel @Inject constructor(
                     // Log.e(TAG, "Error toggling favorite: ${e.message}")
                     currentSuccessState?.let { _poiState.value = it } // Revert to previous success state
                     // Potentially show an error message to the user
-                }
+                } */
             }
-        } */
+        }
 }
