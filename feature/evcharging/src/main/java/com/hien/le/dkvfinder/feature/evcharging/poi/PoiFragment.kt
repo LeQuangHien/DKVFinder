@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hien.le.dkvfinder.feature.evcharging.R
 import com.hien.le.dkvfinder.feature.evcharging.databinding.FragmentPoiBinding
@@ -88,9 +89,11 @@ class PoiFragment : Fragment(), PoiItemClickListener {
     }
 
     override fun onItemClicked(poi: PoiItemUiState) {
-        // Handle item click, e.g., navigate to a detail screen
-        // Toast.makeText(context, "Clicked: ${poi.title}", Toast.LENGTH_SHORT).show()
-        // findNavController().navigate(YourPoiFragmentDirections.actionYourPoiFragmentToDetailFragment(poi.id))
+        poi.id?.let { poiId ->
+            // Use Safe Args to create the navigation action and pass the poiId
+            val action = PoiFragmentDirections.actionPoiFragmentToPoiDetailsWebviewFragment(poiId)
+            findNavController().navigate(action)
+        }
     }
 
 
