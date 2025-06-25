@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
 }
 
@@ -31,5 +32,6 @@ dependencies {
     implementation(project(":core:network"))
 
     implementation(libs.bundles.arrow)
-    implementation(libs.hilt.core)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
 }

@@ -10,19 +10,17 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import jakarta.inject.Singleton
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class NetworkModule {
-    companion object {
-        private const val BASE_URL = "https://api.openchargemap.io/v3/"
-    }
+object NetworkModule {
+    private const val BASE_URL = "https://api.openchargemap.io/v3/"
 
     @Provides
     @Singleton
@@ -68,7 +66,11 @@ abstract class NetworkModule {
     fun provideOpenChargeMapApiService(retrofit: Retrofit): OpenChargeMapApiService {
         return retrofit.create(OpenChargeMapApiService::class.java)
     }
+}
 
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class NetworkBindingsModule {
     @Binds
     @Singleton
     abstract fun bindNetworkDataSource(

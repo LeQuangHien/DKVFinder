@@ -10,9 +10,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hien.le.dkvfinder.feature.evcharging.R
 import com.hien.le.dkvfinder.feature.evcharging.databinding.FragmentPoiBinding
-import dagger.hilt.android.scopes.FragmentScoped
+import dagger.hilt.android.AndroidEntryPoint
 
-@FragmentScoped
+@AndroidEntryPoint
 class PoiFragment : Fragment(), PoiItemClickListener {
 
     private var _binding: FragmentPoiBinding? = null
@@ -95,6 +95,4 @@ class PoiFragment : Fragment(), PoiItemClickListener {
             findNavController().navigate(action)
         }
     }
-
-
 }

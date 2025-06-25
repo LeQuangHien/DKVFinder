@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/poiFragment"
         android:name="com.hien.le.dkvfinder.feature.evcharging.poi.PoiFragment"
-        android:label="fragment_poi"
+        android:label="EV Charging Points"
         tools:layout="@layout/fragment_poi" >
         <action
             android:id="@+id/action_poiFragment_to_poiDetailsWebviewFragment"
@@ -18,7 +18,7 @@
     <fragment
         android:id="@+id/poiDetailsWebviewFragment"
         android:name="com.hien.le.dkvfinder.feature.evcharging.webview.PoiDetailsWebviewFragment"
-        android:label="fragment_poi_details_webview"
+        android:label="EV Charging Point Details"
         tools:layout="@layout/fragment_poi_details_webview" >
         <argument
             android:name="poiId"
