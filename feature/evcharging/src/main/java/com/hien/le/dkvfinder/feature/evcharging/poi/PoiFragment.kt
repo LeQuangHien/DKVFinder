@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.hien.le.dkvfinder.feature.evcharging.R
 import com.hien.le.dkvfinder.feature.evcharging.databinding.FragmentPoiBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,15 +35,8 @@ class PoiFragment : Fragment(), PoiItemClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
-        observeViewModel()
-
-        viewModel.fetchPois()
-
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
+        setupObservers()
+        setupClickListeners()
     }
 
     private fun setupRecyclerView() {
@@ -54,29 +47,43 @@ class PoiFragment : Fragment(), PoiItemClickListener {
         }
     }
 
-    private fun observeViewModel() {
-        viewModel.poiState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is PoiUiState.Loading -> {
-                    // Show loading indicator
-                    binding.progressBar.visibility = View.VISIBLE
-                    binding.recyclerViewPois.visibility = View.GONE
-                    binding.textViewError.visibility = View.GONE
-                }
-                is PoiUiState.Success -> {
-                    // Hide loading indicator, show data
-                    binding.progressBar.visibility = View.GONE
-                    binding.recyclerViewPois.visibility = View.VISIBLE
-                    binding.textViewError.visibility = View.GONE
-                    poiAdapter.submitList(state.pois)
-                }
-                is PoiUiState.Error -> {
-                    // Hide loading indicator, show error message
-                    binding.progressBar.visibility = View.GONE
-                    binding.recyclerViewPois.visibility = View.GONE
-                    binding.textViewError.visibility = View.VISIBLE
-                    binding.textViewError.text = getString(R.string.failed_to_load_pois)
-                }
+    private fun setupClickListeners() {
+        binding.buttonRefresh.setOnClickListener {
+            viewModel.refreshData()
+        }
+    }
+
+    private fun setupObservers() {
+        viewModel.poiStreamLiveData.observe(viewLifecycleOwner) { state ->
+            handleUiState(state)
+        }
+        viewModel.isRefreshing.observe(viewLifecycleOwner) { isRefreshing ->
+            binding.progressBar.isVisible = isRefreshing
+        }
+    }
+
+    private fun handleUiState(state: PoiUiState) {
+        binding.progressBar.isVisible = state is PoiUiState.Loading
+        binding.recyclerViewPois.isVisible = state is PoiUiState.Success
+        binding.layoutEmptyState.isVisible = state is PoiUiState.Empty
+        binding.textViewError.isVisible = state is PoiUiState.Error
+
+        when (state) {
+            is PoiUiState.Loading -> {
+                // ProgressBar is already handled by isVisible
+            }
+
+            is PoiUiState.Success -> {
+                poiAdapter.submitList(state.pois)
+            }
+
+            is PoiUiState.Empty -> {
+                binding.textViewEmptyMessage.text = state.message
+                poiAdapter.submitList(emptyList()) // Clear the adapter
+            }
+
+            is PoiUiState.Error -> {
+                poiAdapter.submitList(emptyList()) // Clear the adapter
             }
         }
     }
@@ -91,5 +98,12 @@ class PoiFragment : Fragment(), PoiItemClickListener {
             val action = PoiFragmentDirections.actionPoiFragmentToPoiDetailsWebviewFragment(poiId)
             findNavController().navigate(action)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.recyclerViewPois.adapter =
+            null // Clear adapter to avoid memory leaks with RecyclerView
+        _binding = null
     }
 }

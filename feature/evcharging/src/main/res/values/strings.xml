@@ -6,4 +6,5 @@
     <string name="distance_unit_km">km</string>
     <string name="distance_unit_miles">miles</string>
     <string name="failed_to_load_pois">Failed to load POIs.</string>
+    <string name="refresh">Refresh</string>
 </resources>
