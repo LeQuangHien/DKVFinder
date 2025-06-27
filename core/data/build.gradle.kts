@@ -31,6 +31,7 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:network"))
     implementation(project(":core:common"))
+    implementation(project(":core:database"))
 
     implementation(libs.bundles.arrow)
     implementation(libs.hilt.android)
