@@ -1,4 +1,4 @@
-package com.hien.le.dkvfinder.core.common.di
+package com.hien.le.dkvfinder.core.common.network
 
 import javax.inject.Qualifier
 import kotlin.annotation.AnnotationRetention.RUNTIME

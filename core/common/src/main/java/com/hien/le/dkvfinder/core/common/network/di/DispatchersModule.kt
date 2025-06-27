@@ -1,5 +1,7 @@
-package com.hien.le.dkvfinder.core.common.di
+package com.hien.le.dkvfinder.core.common.network.di
 
+import com.hien.le.dkvfinder.core.common.network.DKVDispatchers
+import com.hien.le.dkvfinder.core.common.network.Dispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
