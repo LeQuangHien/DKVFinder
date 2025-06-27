@@ -37,7 +37,7 @@ class PoiFragment : Fragment(), PoiItemClickListener {
         setupRecyclerView()
         observeViewModel()
 
-        viewModel.fetchPois() // Initial data load
+        viewModel.fetchPois()
 
     }
 
@@ -47,11 +47,10 @@ class PoiFragment : Fragment(), PoiItemClickListener {
     }
 
     private fun setupRecyclerView() {
-        poiAdapter = PoiAdapter(this) // Pass the Fragment as the click listener
-        binding.recyclerViewPois.apply { // Assuming you have a RecyclerView with this ID
+        poiAdapter = PoiAdapter(this)
+        binding.recyclerViewPois.apply {
             adapter = poiAdapter
             layoutManager = LinearLayoutManager(context)
-            // Add ItemDecorations if needed
         }
     }
 
@@ -84,13 +83,11 @@ class PoiFragment : Fragment(), PoiItemClickListener {
 
     // --- PoiItemClickListener Implementation ---
     override fun onFavoriteClicked(poi: PoiItemUiState) {
-        // Call the ViewModel to handle the favorite toggle
         poi.id?.let { viewModel.toggleFavorite(it, poi.isFavorite) }
     }
 
     override fun onItemClicked(poi: PoiItemUiState) {
         poi.id?.let { poiId ->
-            // Use Safe Args to create the navigation action and pass the poiId
             val action = PoiFragmentDirections.actionPoiFragmentToPoiDetailsWebviewFragment(poiId)
             findNavController().navigate(action)
         }

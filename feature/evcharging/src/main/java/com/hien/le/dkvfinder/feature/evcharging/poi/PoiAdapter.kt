@@ -45,9 +45,8 @@ class PoiAdapter(
             }
 
             if (poi.distance != null) {
-                // Format distance as you need (e.g., "5.2 km")
                 val distanceUnitString = when (poi.distanceUnit) {
-                    0 -> binding.root.context.getString(R.string.distance_unit_km) // Assuming you add these too
+                    0 -> binding.root.context.getString(R.string.distance_unit_km)
                     1 -> binding.root.context.getString(R.string.distance_unit_miles)
                     else -> ""
                 }

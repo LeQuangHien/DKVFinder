@@ -92,7 +92,7 @@ class PoiViewModel @Inject constructor(
                 title = poi.addressInfo?.title,
                 address = formatAddress(poi.addressInfo),
                 town = poi.addressInfo?.town,
-                telephone = poi.operatorInfo?.phonePrimaryContact,
+                telephone = poi.addressInfo?.contactTelephone1 ?: poi.addressInfo?.contactTelephone2,
                 distance = poi.addressInfo?.distance,
                 distanceUnit = poi.addressInfo?.distanceUnit
             )
