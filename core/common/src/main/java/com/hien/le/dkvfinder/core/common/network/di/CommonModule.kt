@@ -1,4 +1,4 @@
-package com.hien.le.dkvfinder.core.common.di // Or your common DI package
+package com.hien.le.dkvfinder.core.common.network.di
 
 import com.hien.le.dkvfinder.core.common.network.ConnectivityChecker
 import com.hien.le.dkvfinder.core.common.network.DefaultConnectivityChecker
