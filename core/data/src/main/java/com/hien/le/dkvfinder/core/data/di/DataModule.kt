@@ -1,6 +1,6 @@
 package com.hien.le.dkvfinder.core.data.di
 
-import com.hien.le.dkvfinder.core.data.repository.DefaultPoiRepository
+import com.hien.le.dkvfinder.core.data.repository.OfflineFirstPoiRepository
 import com.hien.le.dkvfinder.core.data.repository.PoiRepository
 import dagger.Binds
 import dagger.Module
@@ -14,6 +14,6 @@ abstract class DataModule {
     @Binds
     @Singleton
     abstract fun bindPoiRepository(
-        impl: DefaultPoiRepository
+        impl: OfflineFirstPoiRepository
     ): PoiRepository
 }
