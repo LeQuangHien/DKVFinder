@@ -41,4 +41,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
+
+    implementation(libs.junit)
+    implementation(libs.kotlinx.coroutines.test)
 }
