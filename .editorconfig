@@ -1,0 +1,21 @@
+# Denote this is the root .editorconfig file
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{kt,kts}]
+indent_size = 4
+indent_style = space
+# continuation_indent_size = 4 # Often handled well by ktlint's defaults
+# max_line_length = 120 # Ktlint has its own way to handle this, but some rules might respect it.
+
+# Android defaults typically:
+# android_studio_spacing_ kolem_before_brace = true
+
+# For more specific Ktlint rule configurations, you might need to use ruleSet providers
+# or disable rules in build.gradle if .editorconfig doesn't cover it.
+# Ktlint's own rules are largely based on the official Kotlin style guide.
