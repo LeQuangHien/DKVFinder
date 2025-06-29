@@ -1,0 +1,60 @@
+# This workflow builds the dev release variant of the project and uploads it to a newly created release
+# It is triggered by the creation of a tag named 'release/dev*', e.g. 'release/dev123'
+# Please note that the KeyStore credentials have to be created as secrets in your project
+
+name: Dev Release
+
+on:
+  push:
+    tags:
+      - 'release/dev*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_dev_release:
+    name: Build Dev Release
+    runs-on: ubuntu-latest
+    env:
+      FIREBASE_SERVICE_ACCOUNT_SECRET_FILE: service_credentials_content.json
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up JDK 17
+        uses: actions/setup-java@8df1039502a15bceb9433410b1a100fbe190c53b # v4.5.0
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Set up gradle
+        uses: gradle/actions/setup-gradle@cc4fc85e6b35bafd578d5ffbc76a5518407e1af0 # v4.2.1
+      - name: Get version name
+        id: version
+        run: |
+          versionName=$(cat app/build.gradle.kts | grep 'versionName ' | sed -e "s/^.*[[:blank:]]//" -e "s/^\"//" -e "s/\"$//")
+          devNumber=${GITHUB_REF#refs/*/release/*}
+          echo "version-name=$versionName-$devNumber" >> $GITHUB_OUTPUT
+          echo "dev-number=$devNumber" >> $GITHUB_OUTPUT
+      - name: Write Firebase credentials to file
+        run: echo "$FIREBASE_SERVICE_CREDENTIALS" > $FIREBASE_SERVICE_ACCOUNT_SECRET_FILE
+        env:
+          FIREBASE_SERVICE_CREDENTIALS: ${{ secrets.FIREBASE_APP_DISTRIBUTION_ADMIN_CREDENTIALS_FILE_CONTENT }}
+      - name: Build Release
+        run: ./gradlew assembleDevRelease appDistributionUploadDevRelease
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          ALIAS_PASSWORD: ${{ secrets.ALIAS_PASSWORD }}
+          GITHUB_PAT: ${{ secrets.PACKAGES_READ_TOKEN }}
+          VERSION_NAME_SUFFIX: -${{ steps.version.outputs.dev-number }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ env.FIREBASE_SERVICE_ACCOUNT_SECRET_FILE }}
+          RELEASE_NOTES: Dev Release ${{ steps.version.outputs.version-name }}
+        timeout-minutes: 10
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@01570a1f39cb168c169c802c3bceb9e93fb10974 # v2.1.0
+        with:
+          name: Dev Release ${{ steps.version.outputs.version-name }}
+          prerelease: true
+          files: "**/app/build/outputs/apk/dev/release/*.apk"
+          fail_on_unmatched_files: true
+          generate_release_notes: true

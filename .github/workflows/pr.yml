@@ -1,0 +1,107 @@
+# This workflow checks if the project can be built correctly and runs its unit tests and linter
+# After the tests have run it prints a report in the logs and uploads a report as workflow artifact
+# This workflow only runs if a Pull Request is (re-)opened and it is not a draft
+# or after a push to develop or the default branch
+
+name: Pull Request
+
+on:
+  push:
+    branches: [ develop, main ]
+  pull_request:
+    types: [ opened, reopened, ready_for_review, synchronize ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  buildDevDebug:
+    name: Build dev variant
+    if: github.event_name == 'push' || !github.event.pull_request.draft
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout project files
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up JDK 17
+        uses: actions/setup-java@8df1039502a15bceb9433410b1a100fbe190c53b # v4.5.0
+        with:
+          distribution: 'temurin'
+          java-version: 17
+      - name: Set up gradle
+        uses: gradle/actions/setup-gradle@cc4fc85e6b35bafd578d5ffbc76a5518407e1af0 # v4.2.1
+      - name: Build dev variant
+        run: ./gradlew assembleDevDebug
+        env:
+          GITHUB_PAT: ${{ secrets.PACKAGES_READ_TOKEN }}
+        timeout-minutes: 30
+
+  ktlint:
+    name: Check Code Style
+    if: github.event_name == 'push' || !github.event.pull_request.draft
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout project files
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up JDK 17
+        uses: actions/setup-java@8df1039502a15bceb9433410b1a100fbe190c53b # v4.5.0
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Set up gradle
+        uses: gradle/actions/setup-gradle@cc4fc85e6b35bafd578d5ffbc76a5518407e1af0 # v4.2.1
+      - name: Check with KtLint
+        run: ./gradlew ktlintCheck
+        timeout-minutes: 10
+
+  test:
+    name: Run Unit Tests & Lint
+    if: github.event_name == 'push' || !github.event.pull_request.draft
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      checks: write
+      contents: read
+    steps:
+      - name: Checkout project files
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up JDK 17
+        uses: actions/setup-java@8df1039502a15bceb9433410b1a100fbe190c53b # v4.5.0
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Set up gradle
+        uses: gradle/actions/setup-gradle@cc4fc85e6b35bafd578d5ffbc76a5518407e1af0 # v4.2.1
+      - name: Compile tests
+        run: ./gradlew compileDevDebugUnitTestSources
+        env:
+          GITHUB_PAT: ${{ secrets.PACKAGES_READ_TOKEN }}
+        timeout-minutes: 10
+      - name: Run tests
+        run: ./gradlew testDevDebugUnitTest --continue
+        env:
+          GITHUB_PAT: ${{ secrets.PACKAGES_READ_TOKEN }}
+        timeout-minutes: 10
+      - name: Run lint
+        run: ./gradlew lintDevDebug --continue
+        timeout-minutes: 10
+      - name: Annotate PR with JUnit Report
+        uses: mikepenz/action-junit-report@992d97d6eb2e5f3de985fbf9df6a04386874114d # v5
+        if: always() # always run even if the previous step fails
+        with:
+          report_paths: '**/build/test-results/**/TEST-*.xml'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Annotate PR with Lint Report
+        uses: yutailang0119/action-android-lint@bd0b5a7d2cc453d16080b90e2a975d4af4aa9588 # v4.0.0
+        if: always() # always run even if the previous step fails
+        with:
+          report-path: '**/build/reports/lint-results-debug.xml'
+      - name: Upload test and lint reports
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        if: always() # always run even if the previous step fails
+        with:
+          name: reports
+          path: "**/build/reports/*"

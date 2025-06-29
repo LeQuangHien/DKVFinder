@@ -1,0 +1,52 @@
+# This workflow builds the play release variant of the project and uploads it to a newly created release
+# It is triggered by the creation of a tag named 'release/play*', e.g. 'release/play123'
+# Please note that the KeyStore credentials have to be created as secrets in your project
+
+name: Play Release
+
+on:
+  push:
+    tags:
+      - 'release/v*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_play_release:
+    name: Build Play Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up JDK 17
+        uses: actions/setup-java@8df1039502a15bceb9433410b1a100fbe190c53b # v4.5.0
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Set up gradle
+        uses: gradle/actions/setup-gradle@cc4fc85e6b35bafd578d5ffbc76a5518407e1af0 # v4.2.1
+      - name: Get version name
+        id: version
+        run: |
+          versionName=$(cat app/build.gradle.kts | grep 'versionName ' | sed -e "s/^.*[[:blank:]]//" -e "s/^\"//" -e "s/\"$//")
+          versionCode=$(cat app/build.gradle.kts | grep 'versionCode ' | sed -e "s/^.*[[:blank:]]//" -e "s/$//")
+          echo "version-name=$versionName" >> $GITHUB_OUTPUT
+          echo "version-code=$versionCode" >> $GITHUB_OUTPUT
+      - name: Build PlayRelease app bundle (AAB)
+        run: ./gradlew bundlePlayRelease
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          ALIAS_PASSWORD: ${{ secrets.ALIAS_PASSWORD }}
+          GITHUB_PAT: ${{ secrets.PACKAGES_READ_TOKEN }}
+          RELEASE_NOTES: Play Release ${{ steps.version.outputs.version-name }}
+        timeout-minutes: 10
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@01570a1f39cb168c169c802c3bceb9e93fb10974 # v2.1.0
+        with:
+          name: ${{ steps.version.outputs.version-name }} (${{ steps.version.outputs.version-code }})
+          prerelease: false
+          files: "**/app/build/outputs/bundle/playRelease/*.aab"
+          fail_on_unmatched_files: true
+          generate_release_notes: true
