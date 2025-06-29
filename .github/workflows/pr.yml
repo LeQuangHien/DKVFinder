@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  buildDevDebug:
+  buildDebug:
     name: Build dev variant
     if: github.event_name == 'push' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
@@ -32,7 +32,7 @@ jobs:
       - name: Set up gradle
         uses: gradle/actions/setup-gradle@cc4fc85e6b35bafd578d5ffbc76a5518407e1af0 # v4.2.1
       - name: Build dev variant
-        run: ./gradlew assembleDevDebug
+        run: ./gradlew assembleDebug
         env:
           GITHUB_PAT: ${{ secrets.PACKAGES_READ_TOKEN }}
         timeout-minutes: 30
@@ -75,17 +75,17 @@ jobs:
       - name: Set up gradle
         uses: gradle/actions/setup-gradle@cc4fc85e6b35bafd578d5ffbc76a5518407e1af0 # v4.2.1
       - name: Compile tests
-        run: ./gradlew compileDevDebugUnitTestSources
+        run: ./gradlew testDebugUnitTest
         env:
           GITHUB_PAT: ${{ secrets.PACKAGES_READ_TOKEN }}
         timeout-minutes: 10
       - name: Run tests
-        run: ./gradlew testDevDebugUnitTest --continue
+        run: ./gradlew testDebugUnitTest --continue
         env:
           GITHUB_PAT: ${{ secrets.PACKAGES_READ_TOKEN }}
         timeout-minutes: 10
       - name: Run lint
-        run: ./gradlew lintDevDebug --continue
+        run: ./gradlew lintDebug --continue
         timeout-minutes: 10
       - name: Annotate PR with JUnit Report
         uses: mikepenz/action-junit-report@992d97d6eb2e5f3de985fbf9df6a04386874114d # v5
