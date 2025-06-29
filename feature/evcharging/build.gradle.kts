@@ -36,11 +36,15 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    testOptions {
+        unitTests.isReturnDefaultValues = false
+    }
 }
 
 dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:model"))
+    implementation(project(":core:common"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -54,6 +58,10 @@ dependencies {
     implementation(libs.bundles.arrow)
 
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.arch.core.testing)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
