@@ -24,7 +24,6 @@ import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class PoiViewModelTest {
-
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
@@ -37,57 +36,62 @@ class PoiViewModelTest {
     private lateinit var viewModel: PoiViewModel
 
     // Test Data
-    private val testPoiCompact1 = PoiCompact(
-        id = 1,
-        title = "Test Title 1",
-        address = "Test Address 1",
-        town = "Test Town 1",
-        telephone = "123456789",
-        distance = 10.0,
-        distanceUnit = 1,
-        isFavorite = false
-    )
-    private val testPoiCompact2 = PoiCompact(
-        id = 2,
-        title = "Test Title 2",
-        address = "Test Address 2",
-        town = "Test Town 2",
-        telephone = "987654321",
-        distance = 20.0,
-        distanceUnit = 2,
-        isFavorite = true
-    )
+    private val testPoiCompact1 =
+        PoiCompact(
+            id = 1,
+            title = "Test Title 1",
+            address = "Test Address 1",
+            town = "Test Town 1",
+            telephone = "123456789",
+            distance = 10.0,
+            distanceUnit = 1,
+            isFavorite = false,
+        )
+    private val testPoiCompact2 =
+        PoiCompact(
+            id = 2,
+            title = "Test Title 2",
+            address = "Test Address 2",
+            town = "Test Town 2",
+            telephone = "987654321",
+            distance = 20.0,
+            distanceUnit = 2,
+            isFavorite = true,
+        )
     private val testPoiCompactList = listOf(testPoiCompact1, testPoiCompact2)
 
-    private val testPoiItemUiState1 = PoiItemUiState(
-        id = 1,
-        title = "Test Title 1",
-        address = "Test Address 1",
-        town = "Test Town 1",
-        telephone = "123456789",
-        distance = 10.0,
-        distanceUnit = 1,
-        isFavorite = false
-    )
-    private val testPoiItemUiState2 = PoiItemUiState(
-        id = 2,
-        title = "Test Title 2",
-        address = "Test Address 2",
-        town = "Test Town 2",
-        telephone = "987654321",
-        distance = 20.0,
-        distanceUnit = 2,
-        isFavorite = true
-    )
+    private val testPoiItemUiState1 =
+        PoiItemUiState(
+            id = 1,
+            title = "Test Title 1",
+            address = "Test Address 1",
+            town = "Test Town 1",
+            telephone = "123456789",
+            distance = 10.0,
+            distanceUnit = 1,
+            isFavorite = false,
+        )
+    private val testPoiItemUiState2 =
+        PoiItemUiState(
+            id = 2,
+            title = "Test Title 2",
+            address = "Test Address 2",
+            town = "Test Town 2",
+            telephone = "987654321",
+            distance = 20.0,
+            distanceUnit = 2,
+            isFavorite = true,
+        )
     private val testPoiItemUiStateList = listOf(testPoiItemUiState1, testPoiItemUiState2)
 
     @Before
     fun setup() {
         MockKAnnotations.init(this)
-        mockPoiRepository = mockk<PoiRepository>() {
-            coEvery { refreshPois(any(), any()) } returns true
-            coEvery { updateFavoriteStatus(any(), any()) } returns Unit
-        }
+        mockPoiRepository =
+            mockk<PoiRepository> {
+                coEvery { refreshPois(any(), any()) } returns true
+                coEvery { updateFavoriteStatus(any(), any()) } returns Unit
+            }
     }
 
     private fun initViewModel(initialPoisFlow: Flow<List<PoiCompact>> = flowOf(emptyList())) {
@@ -96,92 +100,97 @@ class PoiViewModelTest {
     }
 
     @Test
-    fun `isRefreshing initial state`() = runTest {
-        // Verify that isRefreshing LiveData is initially false.
-        initViewModel()
-        assertEquals(false, viewModel.isRefreshing.value)
-    }
-
-
-    @Test
-    fun `isRefreshing updates during refreshData`() = runTest {
-        // Verify that isRefreshing LiveData becomes true when refreshData is called and false when it completes.
-        initViewModel()
-
-        viewModel.refreshData()
-        assertEquals(true, viewModel.isRefreshing.value)
-
-        advanceUntilIdle()
-        assertEquals(false, viewModel.isRefreshing.value)
-    }
-
-    @Test
-    fun `isRefreshing remains false on refreshData failure`() = runTest {
-        // Verify that isRefreshing LiveData becomes false even if poiRepository.refreshPois returns false.
-        coEvery { mockPoiRepository.refreshPois(any(), any()) } returns false
-        initViewModel()
-
-        viewModel.refreshData()
-        assertEquals(true, viewModel.isRefreshing.value)
-
-        advanceUntilIdle()
-        assertEquals(false, viewModel.isRefreshing.value)
-    }
-
-    @Test
-    fun `getPoiStreamLiveData initial state is Loading`() = runTest {
-        // Verify that poiStreamLiveData emits PoiUiState.Loading as its initial value.
-        // Using MutableSharedFlow to control emissions precisely
-        val poiFlow = MutableSharedFlow<List<PoiCompact>>()
-        initViewModel(initialPoisFlow = poiFlow)
-
-        viewModel.poiStateFlow.test {
-            val initialState = awaitItem()
-            assertEquals(initialState, PoiUiState.Loading)
-            cancelAndConsumeRemainingEvents() // Important to stop collection
+    fun `isRefreshing initial state`() =
+        runTest {
+            // Verify that isRefreshing LiveData is initially false.
+            initViewModel()
+            assertEquals(false, viewModel.isRefreshing.value)
         }
-    }
 
     @Test
-    fun `getPoiStreamLiveData emits Success with data`() = runTest {
-        // Verify that poiStreamLiveData emits PoiUiState.Success with mapped PoiItemUiState list when the repository provides data.
-        // Adding replay = 1 ensures that if the collector (from stateIn) subscribes slightly after an emit ,
-        // it still gets the last emitted value.
-        val poiFlow = MutableSharedFlow<List<PoiCompact>>(replay = 1)
-        initViewModel(initialPoisFlow = poiFlow)
+    fun `isRefreshing updates during refreshData`() =
+        runTest {
+            // Verify that isRefreshing LiveData becomes true when refreshData is called and false when it completes.
+            initViewModel()
 
-        viewModel.poiStateFlow.test {
-            assertEquals(PoiUiState.Loading, awaitItem()) // From onStart or initialValue
+            viewModel.refreshData()
+            assertEquals(true, viewModel.isRefreshing.value)
 
-            poiFlow.emit(testPoiCompactList)
             advanceUntilIdle()
-
-            val successState = awaitItem()
-            assertEquals(PoiUiState.Success(testPoiItemUiStateList), successState)
-            cancelAndConsumeRemainingEvents()
+            assertEquals(false, viewModel.isRefreshing.value)
         }
-    }
 
     @Test
-    fun `getPoiStreamLiveData emits Empty when repository provides no data`() = runTest {
-        // Verify that poiStreamLiveData emits PoiUiState.Empty with the default message when the repository provides an empty list of POIs.
-        val poiFlow = MutableSharedFlow<List<PoiCompact>>(replay = 1)
-        initViewModel(initialPoisFlow = poiFlow)
+    fun `isRefreshing remains false on refreshData failure`() =
+        runTest {
+            // Verify that isRefreshing LiveData becomes false even if poiRepository.refreshPois returns false.
+            coEvery { mockPoiRepository.refreshPois(any(), any()) } returns false
+            initViewModel()
 
-        viewModel.poiStateFlow.test {
-            assertEquals(PoiUiState.Loading, awaitItem())
+            viewModel.refreshData()
+            assertEquals(true, viewModel.isRefreshing.value)
 
-            poiFlow.emit(emptyList()) // Emit empty list
             advanceUntilIdle()
-
-            val emptyState = awaitItem()
-            assertEquals(
-                PoiUiState.Empty("No charging stations found. Try refreshing."),
-                emptyState
-            )
-            cancelAndConsumeRemainingEvents()
+            assertEquals(false, viewModel.isRefreshing.value)
         }
-    }
+
+    @Test
+    fun `getPoiStreamLiveData initial state is Loading`() =
+        runTest {
+            // Verify that poiStreamLiveData emits PoiUiState.Loading as its initial value.
+            // Using MutableSharedFlow to control emissions precisely
+            val poiFlow = MutableSharedFlow<List<PoiCompact>>()
+            initViewModel(initialPoisFlow = poiFlow)
+
+            viewModel.poiStateFlow.test {
+                val initialState = awaitItem()
+                assertEquals(initialState, PoiUiState.Loading)
+                cancelAndConsumeRemainingEvents() // Important to stop collection
+            }
+        }
+
+    @Test
+    fun `getPoiStreamLiveData emits Success with data`() =
+        runTest {
+            // Verify that poiStreamLiveData emits PoiUiState.Success with mapped PoiItemUiState list when the repository provides data.
+            // Adding replay = 1 ensures that if the collector (from stateIn) subscribes slightly after an emit ,
+            // it still gets the last emitted value.
+            val poiFlow = MutableSharedFlow<List<PoiCompact>>(replay = 1)
+            initViewModel(initialPoisFlow = poiFlow)
+
+            viewModel.poiStateFlow.test {
+                assertEquals(PoiUiState.Loading, awaitItem()) // From onStart or initialValue
+
+                poiFlow.emit(testPoiCompactList)
+                advanceUntilIdle()
+
+                val successState = awaitItem()
+                assertEquals(PoiUiState.Success(testPoiItemUiStateList), successState)
+                cancelAndConsumeRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `getPoiStreamLiveData emits Empty when repository provides no data`() =
+        runTest {
+            // Verify that poiStreamLiveData emits PoiUiState.Empty with the default message when the repository provides an empty list of POIs.
+            val poiFlow = MutableSharedFlow<List<PoiCompact>>(replay = 1)
+            initViewModel(initialPoisFlow = poiFlow)
+
+            viewModel.poiStateFlow.test {
+                assertEquals(PoiUiState.Loading, awaitItem())
+
+                poiFlow.emit(emptyList()) // Emit empty list
+                advanceUntilIdle()
+
+                val emptyState = awaitItem()
+                assertEquals(
+                    PoiUiState.Empty("No charging stations found. Try refreshing."),
+                    emptyState,
+                )
+                cancelAndConsumeRemainingEvents()
+            }
+        }
 
     /*
     @Test
@@ -251,30 +260,32 @@ class PoiViewModelTest {
      */
 
     @Test
-    fun `refreshData calls repository with default parameters`() = runTest {
-        // initViewModel needs to be called to instantiate viewModel
-        initViewModel() // Default flow for getPoisStream
-        viewModel.refreshData()
-        advanceUntilIdle()
+    fun `refreshData calls repository with default parameters`() =
+        runTest {
+            // initViewModel needs to be called to instantiate viewModel
+            initViewModel() // Default flow for getPoisStream
+            viewModel.refreshData()
+            advanceUntilIdle()
 
-        coVerify {
-            mockPoiRepository.refreshPois(
-                PoiViewModel.DEFAULT_COUNTRY,
-                PoiViewModel.DEFAULT_MAX_RESULTS
-            )
+            coVerify {
+                mockPoiRepository.refreshPois(
+                    PoiViewModel.DEFAULT_COUNTRY,
+                    PoiViewModel.DEFAULT_MAX_RESULTS,
+                )
+            }
         }
-    }
 
     @Test
-    fun `refreshData calls repository with provided parameters`() = runTest {
-        initViewModel()
-        val country = "US"
-        val maxResults = 10
-        viewModel.refreshData(country, maxResults)
-        advanceUntilIdle()
+    fun `refreshData calls repository with provided parameters`() =
+        runTest {
+            initViewModel()
+            val country = "US"
+            val maxResults = 10
+            viewModel.refreshData(country, maxResults)
+            advanceUntilIdle()
 
-        coVerify { mockPoiRepository.refreshPois(country, maxResults) }
-    }
+            coVerify { mockPoiRepository.refreshPois(country, maxResults) }
+        }
 
     /*@Test
     fun `refreshData handles successful repository refresh`() = runTest {

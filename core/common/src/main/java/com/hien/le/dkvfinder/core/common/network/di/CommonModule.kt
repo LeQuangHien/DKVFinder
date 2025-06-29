@@ -11,10 +11,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class CommonModule {
-
     @Binds
     @Singleton
-    abstract fun bindConnectivityChecker(
-        impl: DefaultConnectivityChecker
-    ): ConnectivityChecker
+    abstract fun bindConnectivityChecker(impl: DefaultConnectivityChecker): ConnectivityChecker
 }

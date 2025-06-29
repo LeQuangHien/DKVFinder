@@ -13,7 +13,5 @@ import javax.inject.Singleton
 abstract class DataModule {
     @Binds
     @Singleton
-    abstract fun bindPoiRepository(
-        impl: OfflineFirstPoiRepository
-    ): PoiRepository
+    abstract fun bindPoiRepository(impl: OfflineFirstPoiRepository): PoiRepository
 }

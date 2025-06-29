@@ -32,7 +32,7 @@ data class Poi(
     @SerializedName("OperatorInfo") val operatorInfo: OperatorInfo?,
     @SerializedName("UsageType") val usageType: UsageType?,
     @SerializedName("StatusType") val statusType: StatusType?,
-    @SerializedName("SubmissionStatus") val submissionStatus: SubmissionStatus?
+    @SerializedName("SubmissionStatus") val submissionStatus: SubmissionStatus?,
 )
 
 data class UserComment(
@@ -46,26 +46,26 @@ data class UserComment(
     @SerializedName("DateCreated") val dateCreated: String?,
     @SerializedName("User") val user: User?,
     @SerializedName("CheckinStatusTypeID") val checkinStatusTypeId: Int?,
-    @SerializedName("CheckinStatusType") val checkinStatusType: CheckinStatusType?
+    @SerializedName("CheckinStatusType") val checkinStatusType: CheckinStatusType?,
 )
 
 data class CommentType(
     @SerializedName("ID") val id: Int?,
-    @SerializedName("Title") val title: String?
+    @SerializedName("Title") val title: String?,
 )
 
 data class CheckinStatusType(
     @SerializedName("ID") val id: Int?,
     @SerializedName("Title") val title: String?,
     @SerializedName("IsAutomatedCheckin") val isAutomatedCheckin: Boolean?,
-    @SerializedName("IsPositive") val isPositive: Boolean?
+    @SerializedName("IsPositive") val isPositive: Boolean?,
 )
 
 data class User(
     @SerializedName("ID") val id: Int?,
     @SerializedName("Username") val username: String?,
     @SerializedName("ReputationPoints") val reputationPoints: Int?,
-    @SerializedName("ProfileImageURL") val profileImageUrl: String?
+    @SerializedName("ProfileImageURL") val profileImageUrl: String?,
 )
 
 data class MediaItem(
@@ -79,7 +79,7 @@ data class MediaItem(
     @SerializedName("IsFeaturedItem") val isFeaturedItem: Boolean?,
     @SerializedName("IsExternalResource") val isExternalResource: Boolean?,
     @SerializedName("User") val user: User?,
-    @SerializedName("DateCreated") val dateCreated: String?
+    @SerializedName("DateCreated") val dateCreated: String?,
 )
 
 data class AddressInfo(
@@ -100,14 +100,14 @@ data class AddressInfo(
     @SerializedName("RelatedURL") val relatedUrl: String?,
     @SerializedName("Distance") val distance: Double?,
     @SerializedName("DistanceUnit") val distanceUnit: Int?,
-    @SerializedName("Title") val title: String?
+    @SerializedName("Title") val title: String?,
 )
 
 data class Country(
     @SerializedName("ID") val id: Int?,
     @SerializedName("ISOCode") val isoCode: String?,
     @SerializedName("ContinentCode") val continentCode: String?,
-    @SerializedName("Title") val title: String?
+    @SerializedName("Title") val title: String?,
 )
 
 data class Connection(
@@ -125,7 +125,7 @@ data class Connection(
     @SerializedName("CurrentTypeID") val currentTypeId: Int?,
     @SerializedName("CurrentType") val currentType: CurrentType?,
     @SerializedName("Quantity") val quantity: Int?,
-    @SerializedName("Comments") val comments: String?
+    @SerializedName("Comments") val comments: String?,
 )
 
 data class ConnectionType(
@@ -133,26 +133,26 @@ data class ConnectionType(
     @SerializedName("IsDiscontinued") val isDiscontinued: Boolean?,
     @SerializedName("IsObsolete") val isObsolete: Boolean?,
     @SerializedName("ID") val id: Int?,
-    @SerializedName("Title") val title: String?
+    @SerializedName("Title") val title: String?,
 )
 
 data class StatusType(
     @SerializedName("IsOperational") val isOperational: Boolean?,
     @SerializedName("IsUserSelectable") val isUserSelectable: Boolean?,
     @SerializedName("ID") val id: Int?,
-    @SerializedName("Title") val title: String?
+    @SerializedName("Title") val title: String?,
 )
 
 data class Level(
     @SerializedName("ID") val id: Int?,
     @SerializedName("Title") val title: String?,
     @SerializedName("Comments") val comments: String?,
-    @SerializedName("IsFastChargeCapable") val isFastChargeCapable: Boolean?
+    @SerializedName("IsFastChargeCapable") val isFastChargeCapable: Boolean?,
 )
 
 data class CurrentType(
     @SerializedName("ID") val id: Int?,
-    @SerializedName("Title") val title: String?
+    @SerializedName("Title") val title: String?,
 )
 
 data class DataProvider(
@@ -165,13 +165,13 @@ data class DataProvider(
     @SerializedName("License") val license: String?,
     @SerializedName("DateLastImported") val dateLastImported: String?,
     @SerializedName("ID") val id: Int?,
-    @SerializedName("Title") val title: String?
+    @SerializedName("Title") val title: String?,
 )
 
 data class DataProviderStatusType(
     @SerializedName("IsProviderEnabled") val isProviderEnabled: Boolean?,
     @SerializedName("ID") val id: List<Int>?,
-    @SerializedName("description") val description: List<String>?
+    @SerializedName("description") val description: List<String>?,
 )
 
 data class OperatorInfo(
@@ -186,7 +186,7 @@ data class OperatorInfo(
     @SerializedName("FaultReportEmail") val faultReportEmail: String?,
     @SerializedName("IsRestrictedEdit") val isRestrictedEdit: Boolean?,
     @SerializedName("ID") val id: Int?,
-    @SerializedName("Title") val title: String?
+    @SerializedName("Title") val title: String?,
 )
 
 data class UsageType(
@@ -194,11 +194,11 @@ data class UsageType(
     @SerializedName("IsMembershipRequired") val isMembershipRequired: Boolean?,
     @SerializedName("IsAccessKeyRequired") val isAccessKeyRequired: Boolean?,
     @SerializedName("ID") val id: Int?,
-    @SerializedName("Title") val title: String?
+    @SerializedName("Title") val title: String?,
 )
 
 data class SubmissionStatus(
     @SerializedName("ID") val id: Int?,
     @SerializedName("Title") val title: String?,
-    @SerializedName("IsLive") val isLive: Boolean?
+    @SerializedName("IsLive") val isLive: Boolean?,
 )

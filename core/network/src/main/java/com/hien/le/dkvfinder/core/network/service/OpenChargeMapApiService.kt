@@ -12,6 +12,6 @@ interface OpenChargeMapApiService {
         @Query("countrycode") country: String,
         @Query("maxresults") maxResults: Int = 100,
         @Query("compact") compact: Boolean = true,
-        @Query("verbose") verbose: Boolean = false
+        @Query("verbose") verbose: Boolean = false,
     ): Either<CallError, List<Poi>>
 }

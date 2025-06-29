@@ -12,5 +12,5 @@ data class PoiEntity(
     val telephone: String?,
     val distance: Double?,
     val distanceUnit: Int?,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
 )

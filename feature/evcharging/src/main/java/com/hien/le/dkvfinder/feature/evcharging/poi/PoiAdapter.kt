@@ -10,28 +10,33 @@ import com.hien.le.dkvfinder.feature.evcharging.databinding.ItemPoiBinding
 
 interface PoiItemClickListener {
     fun onFavoriteClicked(poi: PoiItemUiState)
+
     fun onItemClicked(poi: PoiItemUiState)
 }
 
 class PoiAdapter(
-    private val clickListener: PoiItemClickListener
+    private val clickListener: PoiItemClickListener,
 ) : ListAdapter<PoiItemUiState, PoiAdapter.PoiViewHolder>(PoiDiffCallback()) {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PoiViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): PoiViewHolder {
         val binding = ItemPoiBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return PoiViewHolder(binding, clickListener)
     }
 
-    override fun onBindViewHolder(holder: PoiViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: PoiViewHolder,
+        position: Int,
+    ) {
         val poiItem = getItem(position)
         holder.bind(poiItem)
     }
 
     class PoiViewHolder(
         private val binding: ItemPoiBinding,
-        private val clickListener: PoiItemClickListener
+        private val clickListener: PoiItemClickListener,
     ) : RecyclerView.ViewHolder(binding.root) {
-
         fun bind(poi: PoiItemUiState) {
             binding.textViewPoiTitle.text = poi.title ?: "N/A"
             binding.textViewPoiAddress.text = poi.address ?: "Address not available"
@@ -45,17 +50,19 @@ class PoiAdapter(
             }
 
             if (poi.distance != null) {
-                val distanceUnitString = when (poi.distanceUnit) {
-                    0 -> binding.root.context.getString(R.string.distance_unit_km)
-                    1 -> binding.root.context.getString(R.string.distance_unit_miles)
-                    else -> ""
-                }
+                val distanceUnitString =
+                    when (poi.distanceUnit) {
+                        0 -> binding.root.context.getString(R.string.distance_unit_km)
+                        1 -> binding.root.context.getString(R.string.distance_unit_miles)
+                        else -> ""
+                    }
                 // Get the formatted string from resources
-                binding.textViewPoiDistance.text = binding.root.context.getString(
-                    R.string.poi_distance_format,
-                    poi.distance,
-                    distanceUnitString
-                )
+                binding.textViewPoiDistance.text =
+                    binding.root.context.getString(
+                        R.string.poi_distance_format,
+                        poi.distance,
+                        distanceUnitString,
+                    )
                 binding.textViewPoiDistance.visibility = android.view.View.VISIBLE
             } else {
                 binding.textViewPoiDistance.visibility = android.view.View.GONE
@@ -82,12 +89,18 @@ class PoiAdapter(
 
     // DiffUtil helps ListAdapter determine how the list has changed
     class PoiDiffCallback : DiffUtil.ItemCallback<PoiItemUiState>() {
-        override fun areItemsTheSame(oldItem: PoiItemUiState, newItem: PoiItemUiState): Boolean {
+        override fun areItemsTheSame(
+            oldItem: PoiItemUiState,
+            newItem: PoiItemUiState,
+        ): Boolean {
             // Check if the items represent the same object (e.g., by unique ID)
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: PoiItemUiState, newItem: PoiItemUiState): Boolean {
+        override fun areContentsTheSame(
+            oldItem: PoiItemUiState,
+            newItem: PoiItemUiState,
+        ): Boolean {
             // Check if the data within the items is the same
             return oldItem == newItem
         }

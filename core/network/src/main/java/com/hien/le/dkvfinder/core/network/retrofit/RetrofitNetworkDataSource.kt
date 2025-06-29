@@ -7,12 +7,13 @@ import com.hien.le.dkvfinder.core.network.NetworkDataSource
 import com.hien.le.dkvfinder.core.network.service.OpenChargeMapApiService
 import jakarta.inject.Inject
 
-class RetrofitNetworkDataSource @Inject constructor(
-    private val service: OpenChargeMapApiService
-) : NetworkDataSource {
-    override suspend fun getListPoi(
-        country: String,
-        maxResults: Int
-    ): Either<CallError, List<Poi>> =
-        service.getListPoi(country, maxResults)
-}
+class RetrofitNetworkDataSource
+    @Inject
+    constructor(
+        private val service: OpenChargeMapApiService,
+    ) : NetworkDataSource {
+        override suspend fun getListPoi(
+            country: String,
+            maxResults: Int,
+        ): Either<CallError, List<Poi>> = service.getListPoi(country, maxResults)
+    }

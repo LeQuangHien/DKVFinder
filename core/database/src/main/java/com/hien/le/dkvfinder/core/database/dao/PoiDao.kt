@@ -16,7 +16,10 @@ interface PoiDao {
     suspend fun insertPois(pois: List<PoiEntity>)
 
     @Query("UPDATE pois SET isFavorite = :isFavorite WHERE id = :poiId")
-    suspend fun updateFavoriteStatus(poiId: Int, isFavorite: Boolean)
+    suspend fun updateFavoriteStatus(
+        poiId: Int,
+        isFavorite: Boolean,
+    )
 
     @Query("DELETE FROM pois")
     suspend fun deleteAllPois()

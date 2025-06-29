@@ -37,13 +37,15 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(commonInterceptor: Interceptor): OkHttpClient {
-        val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = if (BuildConfig.DEBUG) {
-                HttpLoggingInterceptor.Level.BODY
-            } else {
-                HttpLoggingInterceptor.Level.NONE
+        val loggingInterceptor =
+            HttpLoggingInterceptor().apply {
+                level =
+                    if (BuildConfig.DEBUG) {
+                        HttpLoggingInterceptor.Level.BODY
+                    } else {
+                        HttpLoggingInterceptor.Level.NONE
+                    }
             }
-        }
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(commonInterceptor)
@@ -73,7 +75,5 @@ object NetworkModule {
 abstract class NetworkBindingsModule {
     @Binds
     @Singleton
-    abstract fun bindNetworkDataSource(
-        impl: RetrofitNetworkDataSource
-    ): NetworkDataSource
+    abstract fun bindNetworkDataSource(impl: RetrofitNetworkDataSource): NetworkDataSource
 }

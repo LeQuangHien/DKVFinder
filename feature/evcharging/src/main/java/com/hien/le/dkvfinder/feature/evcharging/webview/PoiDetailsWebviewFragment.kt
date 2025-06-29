@@ -12,7 +12,6 @@ import androidx.navigation.fragment.navArgs
 import com.hien.le.dkvfinder.feature.evcharging.databinding.FragmentPoiDetailsWebviewBinding // Import generated binding
 
 class PoiDetailsWebviewFragment : Fragment() {
-
     private var _binding: FragmentPoiDetailsWebviewBinding? = null
     private val binding get() = _binding!!
 
@@ -24,14 +23,18 @@ class PoiDetailsWebviewFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentPoiDetailsWebviewBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         val poiId = args.poiId
@@ -43,25 +46,33 @@ class PoiDetailsWebviewFragment : Fragment() {
 
     private fun setupWebView() {
         binding.webViewPoiDetails.settings.javaScriptEnabled = true // Enable JavaScript if needed
-        binding.webViewPoiDetails.webViewClient = object : WebViewClient() {
-            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                super.onPageStarted(view, url, favicon)
-                binding.progressBarWebview.visibility = View.VISIBLE
-            }
+        binding.webViewPoiDetails.webViewClient =
+            object : WebViewClient() {
+                override fun onPageStarted(
+                    view: WebView?,
+                    url: String?,
+                    favicon: Bitmap?,
+                ) {
+                    super.onPageStarted(view, url, favicon)
+                    binding.progressBarWebview.visibility = View.VISIBLE
+                }
 
-            override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
-                binding.progressBarWebview.visibility = View.GONE
-            }
+                override fun onPageFinished(
+                    view: WebView?,
+                    url: String?,
+                ) {
+                    super.onPageFinished(view, url)
+                    binding.progressBarWebview.visibility = View.GONE
+                }
 
-            // Optional: Handle URL loading errors
-            // override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
-            //     super.onReceivedError(view, request, error)
-            //     binding.progressBarWebview.visibility = View.GONE
-            //     // Show an error message or a custom error page
-            //     // view.loadUrl("file:///android_asset/error_page.html")
-            // }
-        }
+                // Optional: Handle URL loading errors
+                // override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
+                //     super.onReceivedError(view, request, error)
+                //     binding.progressBarWebview.visibility = View.GONE
+                //     // Show an error message or a custom error page
+                //     // view.loadUrl("file:///android_asset/error_page.html")
+                // }
+            }
     }
 
     override fun onDestroyView() {

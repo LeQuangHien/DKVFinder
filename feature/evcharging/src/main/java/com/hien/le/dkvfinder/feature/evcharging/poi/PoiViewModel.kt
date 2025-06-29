@@ -25,82 +25,92 @@ data class PoiItemUiState(
     val telephone: String?,
     val distance: Double?,
     val distanceUnit: Int?,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
 )
 
 sealed interface PoiUiState {
     data object Loading : PoiUiState
+
     data class Success(val pois: List<PoiItemUiState>) : PoiUiState
+
     data class Empty(val message: String) : PoiUiState
+
     data object Error : PoiUiState
 }
 
 @HiltViewModel
-class PoiViewModel @Inject constructor(
-    private val poiRepository: PoiRepository
-) : ViewModel() {
+class PoiViewModel
+    @Inject
+    constructor(
+        private val poiRepository: PoiRepository,
+    ) : ViewModel() {
+        companion object {
+            private const val TAG = "PoiViewModel"
+            const val DEFAULT_COUNTRY = "DE"
+            const val DEFAULT_MAX_RESULTS = 20
+            private const val DEFAULT_EMPTY_MESSAGE = "No charging stations found. Try refreshing."
+        }
 
-    companion object {
-        private const val TAG = "PoiViewModel"
-        const val DEFAULT_COUNTRY = "DE"
-        const val DEFAULT_MAX_RESULTS = 20
-        private const val DEFAULT_EMPTY_MESSAGE = "No charging stations found. Try refreshing."
-    }
+        private val _isRefreshing = MutableLiveData(false)
+        val isRefreshing: LiveData<Boolean> = _isRefreshing
 
-    private val _isRefreshing = MutableLiveData(false)
-    val isRefreshing: LiveData<Boolean> = _isRefreshing
+        val poiStateFlow: StateFlow<PoiUiState> =
+            poiRepository.getPoisStream()
+                .catch { e ->
+                    Log.e(TAG, "Error in POI stream: ${e.message}")
+                    PoiUiState.Error
+                }
+                .map { pois ->
+                    if (pois.isEmpty()) {
+                        PoiUiState.Empty(DEFAULT_EMPTY_MESSAGE) // Emit Empty if the stream from DB is empty
+                    } else {
+                        PoiUiState.Success(mapToItemUiState(pois))
+                    }
+                }
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5_000),
+                    initialValue = PoiUiState.Loading,
+                )
+        val poiStreamLiveData: LiveData<PoiUiState> = poiStateFlow.asLiveData()
 
-    val poiStateFlow: StateFlow<PoiUiState> =
-        poiRepository.getPoisStream()
-            .catch { e ->
-                Log.e(TAG, "Error in POI stream: ${e.message}")
-                PoiUiState.Error
-            }
-            .map { pois ->
-                if (pois.isEmpty()) {
-                    PoiUiState.Empty(DEFAULT_EMPTY_MESSAGE) // Emit Empty if the stream from DB is empty
-                } else {
-                    PoiUiState.Success(mapToItemUiState(pois))
+        fun refreshData(
+            country: String = DEFAULT_COUNTRY,
+            maxResults: Int = DEFAULT_MAX_RESULTS,
+        ) {
+            _isRefreshing.value = true
+            viewModelScope.launch {
+                try {
+                    poiRepository.refreshPois(country, maxResults)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error in refreshing data : ${e.message}")
+                } finally {
+                    _isRefreshing.value = false
                 }
             }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = PoiUiState.Loading
-            )
-    val poiStreamLiveData: LiveData<PoiUiState> = poiStateFlow.asLiveData()
+        }
 
-    fun refreshData(country: String = DEFAULT_COUNTRY, maxResults: Int = DEFAULT_MAX_RESULTS) {
-        _isRefreshing.value = true
-        viewModelScope.launch {
-            try {
-                poiRepository.refreshPois(country, maxResults)
-            } catch (e: Exception) {
-                Log.e(TAG, "Error in refreshing data : ${e.message}")
-            } finally {
-                _isRefreshing.value = false
+        private fun mapToItemUiState(pois: List<PoiCompact>): List<PoiItemUiState> {
+            return pois.map { poi ->
+                PoiItemUiState(
+                    id = poi.id,
+                    title = poi.title,
+                    address = poi.address,
+                    town = poi.town,
+                    telephone = poi.telephone,
+                    distance = poi.distance,
+                    distanceUnit = poi.distanceUnit,
+                    isFavorite = poi.isFavorite,
+                )
+            }
+        }
+
+        fun toggleFavorite(
+            poiId: Int,
+            isCurrentlyFavorite: Boolean,
+        ) {
+            viewModelScope.launch {
+                poiRepository.updateFavoriteStatus(poiId, !isCurrentlyFavorite)
             }
         }
     }
-
-    private fun mapToItemUiState(pois: List<PoiCompact>): List<PoiItemUiState> {
-        return pois.map { poi ->
-            PoiItemUiState(
-                id = poi.id,
-                title = poi.title,
-                address = poi.address,
-                town = poi.town,
-                telephone = poi.telephone,
-                distance = poi.distance,
-                distanceUnit = poi.distanceUnit,
-                isFavorite = poi.isFavorite
-            )
-        }
-    }
-
-    fun toggleFavorite(poiId: Int, isCurrentlyFavorite: Boolean) {
-        viewModelScope.launch {
-            poiRepository.updateFavoriteStatus(poiId, !isCurrentlyFavorite)
-        }
-    }
-}

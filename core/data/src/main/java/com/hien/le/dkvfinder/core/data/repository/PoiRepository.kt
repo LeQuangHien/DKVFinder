@@ -15,10 +15,16 @@ interface PoiRepository {
      * and update the local cache.
      * @return true if refresh was successful, false otherwise (e.g., network error).
      */
-    suspend fun refreshPois(country: String, maxResults: Int): Boolean
+    suspend fun refreshPois(
+        country: String,
+        maxResults: Int,
+    ): Boolean
 
     /**
      * Updates the favorite status of a POI in the local cache.
      */
-    suspend fun updateFavoriteStatus(poiId: Int, isFavorite: Boolean)
+    suspend fun updateFavoriteStatus(
+        poiId: Int,
+        isFavorite: Boolean,
+    )
 }

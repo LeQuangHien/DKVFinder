@@ -8,7 +8,7 @@ data class PoiCompact(
     val telephone: String?,
     val distance: Double?,
     val distanceUnit: Int?,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
 )
 
 fun Poi.mapToPoiCompact(): PoiCompact {
@@ -19,7 +19,7 @@ fun Poi.mapToPoiCompact(): PoiCompact {
         town = this.addressInfo?.town,
         telephone = this.addressInfo?.contactTelephone1 ?: this.addressInfo?.contactTelephone2,
         distance = this.addressInfo?.distance,
-        distanceUnit = this.addressInfo?.distanceUnit
+        distanceUnit = this.addressInfo?.distanceUnit,
     )
 }
 
@@ -28,6 +28,6 @@ private fun formatAddress(addressInfo: AddressInfo?): String {
         addressInfo?.addressLine1,
         addressInfo?.addressLine2,
         addressInfo?.postcode,
-        addressInfo?.town
+        addressInfo?.town,
     ).joinToString(separator = ", ").ifEmpty { "Address not available" }
 }
