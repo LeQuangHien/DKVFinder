@@ -10,6 +10,7 @@ import com.hien.le.dkvfinder.core.data.repository.PoiRepository
 import com.hien.le.dkvfinder.core.model.data.PoiCompact
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -36,21 +37,25 @@ sealed interface PoiUiState {
 
 @HiltViewModel
 class PoiViewModel @Inject constructor(
-    private val poiRepository: PoiRepository // Assuming this returns Flow<List<Poi>>
+    private val poiRepository: PoiRepository
 ) : ViewModel() {
 
     companion object {
         private const val TAG = "PoiViewModel"
-        private const val DEFAULT_COUNTRY = "DE"
-        private const val DEFAULT_MAX_RESULTS = 20
+        const val DEFAULT_COUNTRY = "DE"
+        const val DEFAULT_MAX_RESULTS = 20
         private const val DEFAULT_EMPTY_MESSAGE = "No charging stations found. Try refreshing."
     }
 
     private val _isRefreshing = MutableLiveData(false)
     val isRefreshing: LiveData<Boolean> = _isRefreshing
 
-    val poiStreamLiveData: LiveData<PoiUiState> =
+    val poiStateFlow: StateFlow<PoiUiState> =
         poiRepository.getPoisStream()
+            .catch { e ->
+                Log.e(TAG, "Error in POI stream: ${e.message}")
+                PoiUiState.Error
+            }
             .map { pois ->
                 if (pois.isEmpty()) {
                     PoiUiState.Empty(DEFAULT_EMPTY_MESSAGE) // Emit Empty if the stream from DB is empty
@@ -58,25 +63,22 @@ class PoiViewModel @Inject constructor(
                     PoiUiState.Success(mapToItemUiState(pois))
                 }
             }
-            .catch { e ->
-                Log.e(TAG, "Error in POI stream: ${e.message}", e)
-                PoiUiState.Error
-            }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = PoiUiState.Loading
             )
-            .asLiveData()
+    val poiStreamLiveData: LiveData<PoiUiState> = poiStateFlow.asLiveData()
 
     fun refreshData(country: String = DEFAULT_COUNTRY, maxResults: Int = DEFAULT_MAX_RESULTS) {
+        _isRefreshing.value = true
         viewModelScope.launch {
-            _isRefreshing.value = true
-            val success = poiRepository.refreshPois(country, maxResults)
-            _isRefreshing.value = false
-            if (!success) {
-                // Optionally handle refresh failure, e.g., show a Snackbar.
-                Log.w(TAG, "POI refresh failed for $country")
+            try {
+                poiRepository.refreshPois(country, maxResults)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in refreshing data : ${e.message}")
+            } finally {
+                _isRefreshing.value = false
             }
         }
     }
