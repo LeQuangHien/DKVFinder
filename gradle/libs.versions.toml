@@ -1,10 +1,10 @@
 [versions]
-agp = "8.12.0-alpha06"
+agp = "8.11.0"
 kotlin = "2.1.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
-junitVersion = "1.2.1"
-espressoCore = "3.6.1"
+junitVersion = "1.1.5"
+espressoCore = "3.5.0"
 appcompat = "1.7.1"
 material = "1.12.0"
 constraintlayout = "2.2.1"
@@ -26,6 +26,10 @@ kotlinxCoroutinesTest = "1.10.2"
 mockk = "1.14.4"
 turbine = "1.2.1"
 archCoreTesting = "2.2.0"
+composeBom = "2025.06.01"
+composeActivity = "1.10.1"
+composeViewmodel = "2.9.1"
+composeRuntime = "1.8.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -56,9 +60,19 @@ mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCoreTesting" }
 
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3"}
+compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview"}
+compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4"}
+compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest"}
+compose-activity = { group = "androidx.activity", name = "activity-compose", version.ref = "composeActivity" }
+compose-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "composeViewmodel" }
+compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "composeRuntime" }
+
 [bundles]
 retrofit = ["retrofit", "retrofit-gson"]
 arrow = ["arrow", "arrow-retrofit"]
+compose = ["compose-material3", "compose-ui-tooling-preview", "compose-ui-test-junit4", "compose-ui-test-manifest", "compose-activity", "compose-viewmodel", "compose-runtime"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -66,5 +80,6 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 hilt-android = {id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 androidx-navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigationSafeargs" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
