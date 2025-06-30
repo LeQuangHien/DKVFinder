@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.hien.le.evcharging_compose"
+    namespace = "com.hien.le.dkvfinder.feature.evcharging_compose"
     compileSdk = 36
 
     defaultConfig {
@@ -39,6 +39,10 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:data"))
+    implementation(project(":core:model"))
+    implementation(project(":core:common"))
+
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
 
@@ -46,6 +50,8 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
+    debugImplementation(libs.compose.ui.tooling)
     ksp(libs.hilt.android.compiler)
 
     testImplementation(libs.junit)
