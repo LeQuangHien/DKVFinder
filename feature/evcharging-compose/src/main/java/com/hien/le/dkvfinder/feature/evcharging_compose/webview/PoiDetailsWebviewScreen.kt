@@ -25,11 +25,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 
+private const val baseUrl = "https://openchargemap.org/site/poi/details/"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun PoiDetailsWebviewScreen(
-    url: String,
+    modifier: Modifier = Modifier,
+    poiId: Int,
     onNavigateUp: () -> Unit
 ) {
     var isLoading by remember { mutableStateOf(true) }
@@ -50,7 +53,7 @@ fun PoiDetailsWebviewScreen(
         }
     ) { paddingValues ->
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
@@ -73,7 +76,7 @@ fun PoiDetailsWebviewScreen(
                             }
                         }
                         settings.javaScriptEnabled = true // Enable if the web page needs JS
-                        loadUrl(url)
+                        loadUrl("$baseUrl$poiId")
                     }
                 },
                 update = { webView ->
