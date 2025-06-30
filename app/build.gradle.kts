@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -72,6 +73,7 @@ android {
 
 dependencies {
     implementation(project(":feature:evcharging"))
+    implementation(project(":feature:evcharging-compose"))
 
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
@@ -82,6 +84,8 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
 
