@@ -1,8 +1,10 @@
 package com.hien.le.dkvfinder.feature.evcharging_compose.poi
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -25,6 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,12 +43,23 @@ fun PoiScreen(
     onItemClicked: (Int) -> Unit,
     viewModel: PoiViewModel = hiltViewModel()
 ) {
-    val poiUiState = viewModel.poiStateFlow.collectAsStateWithLifecycle()
+    val poiUiState by viewModel.poiStateFlow.collectAsStateWithLifecycle()
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
+
+    if (isRefreshing) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    }
     PoiScreenScaffold(
         modifier = modifier,
-        poiUiState = poiUiState.value,
+        poiUiState = poiUiState,
         onFavoriteClicked = viewModel::toggleFavorite,
-        onItemClicked = onItemClicked
+        onItemClicked = onItemClicked,
+        onRefresh = viewModel::refreshData
     )
 }
 
@@ -54,7 +69,8 @@ fun PoiScreenScaffold(
     modifier: Modifier = Modifier,
     poiUiState: PoiUiState,
     onFavoriteClicked: (Int, Boolean) -> Unit,
-    onItemClicked: (Int) -> Unit
+    onItemClicked: (Int) -> Unit,
+    onRefresh: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -78,7 +94,14 @@ fun PoiScreenScaffold(
                 }
 
                 is PoiUiState.Empty -> {
-                    Text(text = poiUiState.message)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = poiUiState.message)
+                        Button(onClick = onRefresh) {
+                            Text(text = "Refresh")
+                        }
+                    }
                 }
 
                 is PoiUiState.Success -> {
@@ -104,7 +127,11 @@ fun PoiList(
     onFavoriteClicked: (Int, Boolean) -> Unit,
     onItemClicked: (Int) -> Unit
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(bottom = 16.dp)
+    ) {
         items(items = pois, key = { it.id ?: -1 }) { poi ->
             PoiItem(
                 poi = poi,
@@ -113,7 +140,6 @@ fun PoiList(
             )
         }
     }
-
 }
 
 @Composable
@@ -214,7 +240,8 @@ fun PoiScreenScaffoldPreview() {
     PoiScreenScaffold(
         poiUiState = PoiUiState.Success(pois),
         onFavoriteClicked = { _, _ -> },
-        onItemClicked = {}
+        onItemClicked = {},
+        onRefresh = {}
     )
 }
 
