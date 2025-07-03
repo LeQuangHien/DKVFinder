@@ -64,14 +64,6 @@ class PoiDetailsWebviewFragment : Fragment() {
                     super.onPageFinished(view, url)
                     binding.progressBarWebview.visibility = View.GONE
                 }
-
-                // Optional: Handle URL loading errors
-                // override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
-                //     super.onReceivedError(view, request, error)
-                //     binding.progressBarWebview.visibility = View.GONE
-                //     // Show an error message or a custom error page
-                //     // view.loadUrl("file:///android_asset/error_page.html")
-                // }
             }
     }
 
