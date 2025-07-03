@@ -1,0 +1,4 @@
+# Exclude all directories named 'build' anywhere in the project
+build/
+.idea/
+local.properties
