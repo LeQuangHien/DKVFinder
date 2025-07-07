@@ -23,8 +23,8 @@ class OfflineFirstPoiRepository
     constructor(
         private val networkDataSource: NetworkDataSource,
         private val poiDao: PoiDao,
-        private val connectivityChecker: ConnectivityChecker, // Inject connectivity checker
-        @Dispatcher(DKVDispatchers.IO) private val ioDispatcher: CoroutineDispatcher, // Use IO dispatcher for DB/Network
+        private val connectivityChecker: ConnectivityChecker,
+        @Dispatcher(DKVDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
     ) : PoiRepository {
         companion object {
             private const val TAG = "OfflineFirstPoiRepository"
