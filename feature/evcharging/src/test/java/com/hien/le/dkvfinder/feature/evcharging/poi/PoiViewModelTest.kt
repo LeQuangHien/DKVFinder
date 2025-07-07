@@ -27,6 +27,7 @@ class PoiViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
+    // Run tasks synchronously for testing because of LiveData
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -287,33 +288,28 @@ class PoiViewModelTest {
             coVerify { mockPoiRepository.refreshPois(country, maxResults) }
         }
 
-    /*@Test
+    @Test
     fun `refreshData handles successful repository refresh`() = runTest {
-        coEvery { mockPoiRepository.refreshPois(any(), any()) } returns true
         val poiFlow = MutableSharedFlow<List<PoiCompact>>(replay = 1) // replay for initial state
         initViewModel(initialPoisFlow = poiFlow)
 
 
         viewModel.poiStateFlow.test {
-            assert(awaitItem() is PoiUiState.Loading)
-            assert(awaitItem() is PoiUiState.Empty) // // From initial poiFlow emit
-
-            coEvery { mockPoiRepository.refreshPois(any(), any()) } coAnswers {
-                poiFlow.emit(testPoiCompactList) // Simulate DB update and flow emission
-                true
-            }
+            assertEquals(PoiUiState.Loading, awaitItem())
 
             viewModel.refreshData()
             // The successState will be emitted by the poiFlow via the refreshPois mock
             advanceUntilIdle()
 
+            poiFlow.emit(testPoiCompactList) // Simulate DB update and flow emission
+            advanceUntilIdle()
+
             val successState = awaitItem()
-            assert(awaitItem() is PoiUiState.Success)
             assertEquals(PoiUiState.Success(testPoiItemUiStateList), successState)
             cancelAndConsumeRemainingEvents()
         }
         coVerify { mockPoiRepository.refreshPois(any(), any()) }
-    } */
+    }
 
     @Test
     fun `refreshData handles failed repository refresh`() {
