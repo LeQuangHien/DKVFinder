@@ -7,8 +7,9 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.hien.le.dkvfinder.core.navigation.NavigationManager
+import com.hien.le.dkvfinder.core.navigation.NavigationRoute
 import com.hien.le.dkvfinder.feature.evcharging.databinding.FragmentPoiBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -96,8 +97,9 @@ class PoiFragment : Fragment(), PoiItemClickListener {
 
     override fun onItemClicked(poi: PoiItemUiState) {
         poi.id?.let { poiId ->
-            val action = PoiFragmentDirections.actionPoiFragmentToPoiDetailsWebviewFragment(poiId)
-            findNavController().navigate(action)
+            val lat = 0.0f
+            val long = 0.0f
+            NavigationManager.navigate(NavigationRoute.ToMap(lat, long))
         }
     }
 
