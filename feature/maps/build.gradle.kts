@@ -1,8 +1,16 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
+}
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
 }
 
 android {
@@ -14,6 +22,17 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
+        buildConfigField(
+            "String",
+            "HERE_ACCESS_KEY_ID",
+            "\"${localProperties.getProperty("HERE_ACCESS_KEY_ID", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "HERE_ACCESS_KEY_SECRET",
+            "\"${localProperties.getProperty("HERE_ACCESS_KEY_SECRET", "")}\""
+        )
     }
 
     buildTypes {
@@ -32,10 +51,21 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
-
+    implementation(
+        fileTree(
+            mapOf(
+                "dir" to "libs",
+                "include" to listOf("*.aar", "*.jar"),
+                "exclude" to listOf("*mock*.jar")
+            )
+        )
+    )
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

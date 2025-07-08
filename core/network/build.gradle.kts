@@ -1,8 +1,16 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
+}
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
 }
 
 android {
@@ -11,6 +19,8 @@ android {
 
     defaultConfig {
         minSdk = 24
+
+        buildConfigField("String", "API_KEY", "\"${localProperties.getProperty("API_KEY", "")}\"")
     }
 
     buildFeatures {
@@ -24,10 +34,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    defaultConfig {
-        buildConfigField("String", "API_KEY", "\"eaab6b29-8d8d-4776-88d2-d26c275f50ba\"")
     }
 }
 
