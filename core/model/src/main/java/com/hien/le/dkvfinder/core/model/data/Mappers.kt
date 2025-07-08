@@ -11,6 +11,8 @@ fun PoiEntity.asDataModel(): PoiCompact {
         telephone = this.telephone,
         distance = this.distance,
         distanceUnit = this.distanceUnit,
+        latitude = this.latitude,
+        longitude = this.longitude,
         isFavorite = this.isFavorite,
     )
 }
@@ -24,6 +26,8 @@ fun PoiCompact.asEntity(): PoiEntity {
         telephone = this.telephone,
         distance = this.distance,
         distanceUnit = this.distanceUnit,
+        latitude = this.latitude,
+        longitude = this.longitude,
         isFavorite = this.isFavorite,
     )
 }

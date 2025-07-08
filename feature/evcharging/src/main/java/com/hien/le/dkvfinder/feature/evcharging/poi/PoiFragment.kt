@@ -96,9 +96,9 @@ class PoiFragment : Fragment(), PoiItemClickListener {
     }
 
     override fun onItemClicked(poi: PoiItemUiState) {
-        poi.id?.let { poiId ->
-            val lat = 0.0f
-            val long = 0.0f
+        val lat = poi.latitude
+        val long = poi.longitude
+        if (lat != null && long != null) {
             NavigationManager.navigate(NavigationRoute.ToMap(lat, long))
         }
     }

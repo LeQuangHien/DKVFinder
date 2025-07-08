@@ -25,6 +25,8 @@ data class PoiItemUiState(
     val telephone: String?,
     val distance: Double?,
     val distanceUnit: Int?,
+    val latitude: Double?,
+    val longitude: Double?,
     val isFavorite: Boolean = false,
 )
 
@@ -100,6 +102,8 @@ class PoiViewModel
                     telephone = poi.telephone,
                     distance = poi.distance,
                     distanceUnit = poi.distanceUnit,
+                    latitude = poi.latitude,
+                    longitude = poi.longitude,
                     isFavorite = poi.isFavorite,
                 )
             }

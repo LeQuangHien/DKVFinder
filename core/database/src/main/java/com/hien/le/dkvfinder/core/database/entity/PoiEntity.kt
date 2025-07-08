@@ -12,5 +12,7 @@ data class PoiEntity(
     val telephone: String?,
     val distance: Double?,
     val distanceUnit: Int?,
+    val latitude: Double?,
+    val longitude: Double?,
     val isFavorite: Boolean = false,
 )

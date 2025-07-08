@@ -29,16 +29,16 @@ class MapFragment : Fragment() {
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
 
-    private var receivedLatitude: Float = 0.0f
-    private var receivedLongitude: Float = 0.0f
+    private var receivedLatitude: Double = 0.0
+    private var receivedLongitude: Double = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Retrieve arguments from the bundle
         arguments?.let {
             if (it.containsKey(ARG_LATITUDE_KEY) && it.containsKey(ARG_LONGITUDE_KEY)) {
-                receivedLatitude = it.getFloat(ARG_LATITUDE_KEY)
-                receivedLongitude = it.getFloat(ARG_LONGITUDE_KEY)
+                receivedLatitude = it.getString(ARG_LATITUDE_KEY)?.toDouble() ?: 0.0
+                receivedLongitude = it.getString(ARG_LONGITUDE_KEY)?.toDouble() ?: 0.0
                 Log.d(TAG, "Args received: Lat $receivedLatitude, Lon $receivedLongitude")
             } else {
                 Log.w(TAG, "One or both map arguments not found in bundle.")
@@ -101,7 +101,7 @@ class MapFragment : Fragment() {
                 val distanceInMeters = (1000 * 10).toDouble()
                 val mapMeasureZoom =
                     MapMeasure(MapMeasure.Kind.DISTANCE_IN_METERS, distanceInMeters)
-                binding.mapView.camera.lookAt(GeoCoordinates(52.530932, 13.384915), mapMeasureZoom)
+                binding.mapView.camera.lookAt(GeoCoordinates(receivedLatitude, receivedLongitude), mapMeasureZoom)
             } else {
                 Log.d(TAG, "Loading map failed: mapError: " + mapError.name)
             }
