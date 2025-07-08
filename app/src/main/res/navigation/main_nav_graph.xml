@@ -1,0 +1,42 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/poiFragment">
+
+    <fragment
+        android:id="@+id/poiFragment"
+        android:name="com.hien.le.dkvfinder.feature.evcharging.poi.PoiFragment"
+        android:label="Charging Stations"
+        tools:layout="@layout/fragment_poi">
+        <action
+            android:id="@+id/action_poiFragmentIn_to_mapFragment"
+            app:destination="@id/mapFragment" />
+        <action
+            android:id="@+id/action_poiFragment_to_poiDetailsWebviewFragment"
+            app:destination="@id/poiDetailsWebviewFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.hien.le.dkvfinder.feature.maps.MapFragment"
+        android:label="Map View"
+        tools:layout="@layout/fragment_map">
+        <argument
+            android:name="latitude_map_arg"
+            app:argType="float" />
+        <argument
+            android:name="longitude_map_arg"
+            app:argType="float" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/poiDetailsWebviewFragment"
+        android:name="com.hien.le.dkvfinder.feature.evcharging.webview.PoiDetailsWebviewFragment"
+        android:label="EV Charging Point Details"
+        tools:layout="@layout/fragment_poi_details_webview" >
+        <argument
+            android:name="poiId"
+            app:argType="integer" />
+    </fragment>
+</navigation>

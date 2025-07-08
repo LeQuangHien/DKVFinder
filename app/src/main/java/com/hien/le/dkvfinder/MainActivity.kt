@@ -1,15 +1,25 @@
 package com.hien.le.dkvfinder
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.hien.le.dkvfinder.core.navigation.NavigationManager
+import com.hien.le.dkvfinder.core.navigation.NavigationRoute
 import com.hien.le.dkvfinder.databinding.ActivityMainBinding
+import com.hien.le.dkvfinder.feature.evcharging.poi.PoiFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -27,6 +37,8 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
+
+        observeNavigationEvents(navController)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -49,5 +61,40 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) ||
             super.onSupportNavigateUp()
+    }
+
+    private fun observeNavigationEvents(navController: NavController) {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                NavigationManager.navigationEvents.collectLatest { route ->
+                    Log.d("MainActivity", "Navigation event received: $route")
+                    handleNavigationWithSafeArgs(route, navController)
+                }
+            }
+        }
+    }
+
+
+    private fun handleNavigationWithSafeArgs(route: NavigationRoute, navController: NavController) {
+        try {
+            when (route) {
+                is NavigationRoute.ToMap -> {
+                    val action = PoiFragmentDirections.actionPoiFragmentInToMapFragment(
+                        route.latitude,
+                        route.longitude
+                    )
+                    navController.navigate(action)
+                }
+
+                is NavigationRoute.ToPoiDetails -> {
+                    val action = PoiFragmentDirections.actionPoiFragmentToPoiDetailsWebviewFragment(
+                        route.poiId
+                    )
+                    navController.navigate(action)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Safe Args Navigation failed for route $route.", e)
+        }
     }
 }
