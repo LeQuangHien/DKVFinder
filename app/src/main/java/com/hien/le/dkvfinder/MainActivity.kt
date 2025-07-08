@@ -87,10 +87,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 is NavigationRoute.ToPoiDetails -> {
-                    val action = PoiFragmentDirections.actionPoiFragmentToPoiDetailsWebviewFragment(
-                        route.poiId
-                    )
-                    navController.navigate(action)
+                    // Do nothing
                 }
             }
         } catch (e: Exception) {
