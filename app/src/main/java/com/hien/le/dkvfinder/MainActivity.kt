@@ -80,8 +80,8 @@ class MainActivity : AppCompatActivity() {
             when (route) {
                 is NavigationRoute.ToMap -> {
                     val action = PoiFragmentDirections.actionPoiFragmentInToMapFragment(
-                        route.latitude,
-                        route.longitude
+                        route.latitude.toString(),
+                        route.longitude.toString()
                     )
                     navController.navigate(action)
                 }

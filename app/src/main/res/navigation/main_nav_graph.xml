@@ -21,9 +21,9 @@
         tools:layout="@layout/fragment_map">
         <argument
             android:name="latitude_map_arg"
-            app:argType="float" />
+            app:argType="string" />
         <argument
             android:name="longitude_map_arg"
-            app:argType="float" />
+            app:argType="string" />
     </fragment>
 </navigation>
