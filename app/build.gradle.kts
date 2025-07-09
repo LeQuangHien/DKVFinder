@@ -23,13 +23,14 @@ android {
         getByName("debug") {
             keyAlias = "hienle"
             keyPassword = "hienle"
-            storeFile = file("../debug.jks")
+            storeFile = file("../debug.jks") // TODO: Local use only; for CI should encode to Base64 for CI
             storePassword = "hienle"
         }
         create("release") {
             keyAlias = "dkvfinder"
             keyPassword = System.getenv("KEYSTORE_PASSWORD")
-            storeFile = file("../release.jks")
+            storeFile =
+                file("../release.jks") // TODO: Local use only; for CI should encode to Base64 for CI
             storePassword = System.getenv("KEYSTORE_PASSWORD")
         }
     }
