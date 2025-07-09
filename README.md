@@ -13,7 +13,7 @@ DKVFinder is an Android application designed to help users locate EV charging st
 
 ## Architecture & Tech Stack
 
-The project follow an MVVM (Model-View-ViewModel) architecture pattern, Clean Architecture and modularization.
+The project follows an MVVM (Model-View-ViewModel) architecture pattern, Clean Architecture, and modularization.
 
 *   **Programming Language:** [Kotlin](https://kotlinlang.org/)
 *   **Architecture:** MVVM
@@ -35,6 +35,7 @@ The project follow an MVVM (Model-View-ViewModel) architecture pattern, Clean Ar
 *   **Coroutines:** For managing background threads and asynchronous tasks.
 *   **Testing:**
     *   [JUnit 4](https://junit.org/junit4/)
+    *   [kotlinx-coroutines-test](https://github.com/Kotlin/kotlinx.coroutines/tree/master/kotlinx-coroutines-test)
     *   [MockK](https://mockk.io/) (for mocking in unit tests)
     *   [Turbine](https://github.com/cashapp/turbine) (for testing Kotlin Flows)
 *   **Build System:** [Gradle](https://gradle.org/) with Kotlin DSL (`build.gradle.kts`)
