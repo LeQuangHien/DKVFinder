@@ -12,6 +12,8 @@ import com.here.sdk.core.engine.AuthenticationMode
 import com.here.sdk.core.engine.SDKNativeEngine
 import com.here.sdk.core.engine.SDKOptions
 import com.here.sdk.core.errors.InstantiationErrorException
+import com.here.sdk.mapview.MapImageFactory
+import com.here.sdk.mapview.MapMarker
 import com.here.sdk.mapview.MapMeasure
 import com.here.sdk.mapview.MapScheme
 import com.hien.le.dkvfinder.feature.maps.databinding.FragmentMapBinding
@@ -32,9 +34,11 @@ class MapFragment : Fragment() {
     private var receivedLatitude: Double = 0.0
     private var receivedLongitude: Double = 0.0
 
+    private val mapMarkers =
+        mutableListOf<MapMarker>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Retrieve arguments from the bundle
         arguments?.let {
             if (it.containsKey(ARG_LATITUDE_KEY) && it.containsKey(ARG_LONGITUDE_KEY)) {
                 receivedLatitude = it.getString(ARG_LATITUDE_KEY)?.toDouble() ?: 0.0
@@ -46,10 +50,6 @@ class MapFragment : Fragment() {
         } ?: run {
             Log.w(TAG, "Arguments bundle is null.")
         }
-        // Initialize HERE SDK only if it hasn't been initialized yet in the app's lifecycle
-        // Typically, this is done in the Application class, but if not,
-        // this fragment can be a secondary point of initialization.
-        // However, it's best if the Application class handles this to avoid re-initialization issues.
         initializeHERESDK(requireContext())
     }
 
@@ -64,15 +64,11 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // The MapView needs to be created after the SDK is initialized.
-        // If SDK initialization is asynchronous, ensure loadMapScene is called in its callback.
-        // For simplicity here, we assume SDK is either already initialized or will be synchronously enough.
-        binding.mapView.onCreate(savedInstanceState) // Important for MapView lifecycle
+        binding.mapView.onCreate(savedInstanceState)
         loadMapScene()
     }
 
     private fun initializeHERESDK(context: Context) {
-        // Set your credentials for the HERE SDK.
         val accessKeyID = BuildConfig.HERE_ACCESS_KEY_ID
         val accessKeySecret = BuildConfig.HERE_ACCESS_KEY_SECRET
         val authenticationMode = AuthenticationMode.withKeySecret(accessKeyID, accessKeySecret)
@@ -85,30 +81,47 @@ class MapFragment : Fragment() {
     }
 
     private fun disposeHERESDK() {
-        // Free HERE SDK resources before the application shuts down.
-        // Usually, this should be called only on application termination.
-        // Afterwards, the HERE SDK is no longer usable unless it is initialized again.
         SDKNativeEngine.getSharedInstance()?.dispose()
-        // For safety reasons, we explicitly set the shared instance to null to avoid situations,
-        // where a disposed instance is accidentally reused.
         SDKNativeEngine.setSharedInstance(null)
     }
 
     private fun loadMapScene() {
-        // Load a scene from the HERE SDK to render the map with a map scheme.
         binding.mapView.mapScene.loadScene(MapScheme.NORMAL_DAY) { mapError ->
             if (mapError == null) {
+                val targetCoordinates = GeoCoordinates(receivedLatitude, receivedLongitude)
                 val distanceInMeters = (1000 * 10).toDouble()
                 val mapMeasureZoom =
                     MapMeasure(MapMeasure.Kind.DISTANCE_IN_METERS, distanceInMeters)
-                binding.mapView.camera.lookAt(GeoCoordinates(receivedLatitude, receivedLongitude), mapMeasureZoom)
+                binding.mapView.camera.lookAt(targetCoordinates, mapMeasureZoom)
+
+                addMapMarker(targetCoordinates)
             } else {
                 Log.d(TAG, "Loading map failed: mapError: " + mapError.name)
             }
         }
     }
 
-    // --- MapView Lifecycle Methods (Essential) ---
+    private fun addMapMarker(coordinates: GeoCoordinates) {
+        val mapImage = MapImageFactory.fromResource(
+            requireContext().resources,
+            R.drawable.ic_map_pin
+        )
+        val mapMarker = MapMarker(coordinates, mapImage)
+        binding.mapView.mapScene.addMapMarker(mapMarker)
+        mapMarkers.add(mapMarker)
+
+        Log.d(TAG, "MapMarker added at $coordinates")
+    }
+
+    private fun clearMapMarkers() {
+        for (mapMarker in mapMarkers) {
+            binding.mapView.mapScene.removeMapMarker(mapMarker)
+        }
+        mapMarkers.clear()
+        Log.d(TAG, "All map markers cleared.")
+    }
+
+
     override fun onResume() {
         binding.mapView.onResume()
         super.onResume()
@@ -120,9 +133,10 @@ class MapFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        binding.mapView.onDestroy() // Destroy MapView
-        _binding = null
+        clearMapMarkers()
+        binding.mapView.onDestroy()
         disposeHERESDK()
+        _binding = null
         super.onDestroyView()
     }
 
